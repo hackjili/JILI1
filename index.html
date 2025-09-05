@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Super Ace Predication V2</title>
 <script src="https://cdn.tailwindcss.com"></script>
-<script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
 <style>
 body { font-family: sans-serif; }
 .animate-pulse-scale { animation: pulse 1.5s infinite; }
@@ -30,8 +29,10 @@ body { font-family: sans-serif; }
   <button onclick="unlockPage()" class="bg-cyan-500 text-white px-4 py-2 rounded w-full hover:bg-cyan-600">Unlock</button>
   <p id="errorMsg" class="text-red-500 mt-2 hidden flex items-center justify-center space-x-2">
     <span></span>
-    <a id="whatsappLink" href="https://wa.me/8801760226034?text=আমি%20লগইন%20করতে%20পারতেছি%20না" target="_blank" class="text-green-500 hover:text-green-700">
-      <i class="fa-brands fa-whatsapp fa-lg"></i>
+    <a id="whatsappLink" href="https://wa.me/8801760226034?text=আমি%20লগইন করতে পারতেছি না" target="_blank" class="inline-block w-6 h-6">
+      <svg viewBox="0 0 24 24" fill="#25D366" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 0C5.373 0 0 5.373 0 12c0 2.117.555 4.092 1.52 5.84L0 24l6.382-1.502C8.88 23.445 10.417 24 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm5.502 17.496c-.233.654-1.38 1.277-1.91 1.36-.495.076-1.1.108-2.02-.488-.873-.556-1.86-1.65-2.413-2.11-.653-.53-.423-.906-.237-1.35.186-.44.494-.544.81-.66.33-.12.653-.23.933-.347.28-.118.605-.157.918.118.312.274 1.188 1.01 1.28 1.09.093.08.155.12.25.2.094.08.156.132.234.22.078.088.052.165.037.27-.015.104-.18.398-.26.55-.08.153-.16.18-.28.31-.12.13-.25.283-.34.37-.093.088-.183.156-.28.24-.093.08-.125.107-.22.204-.093.096-.37.35-.453.415-.082.064-.166.13-.248.19-.083.062-.195.065-.296.097-.1.03-.908.443-1.09.502-.182.058-.327.104-.476.03-.15-.073-.903-.44-1.1-.617-.195-.177-.41-.35-.58-.564-.17-.213-.39-.484-.45-.57-.06-.086-.5-.756-.566-.897-.065-.14-.127-.236-.077-.37.05-.133.2-.327.27-.442.07-.114.15-.154.25-.26.1-.104.125-.16.215-.23.09-.07.145-.105.22-.15.075-.045.18-.082.27-.13.09-.047.345-.18.44-.23.093-.05.42-.14.51-.17.09-.027.323-.073.43-.104.106-.03.57-.062.696-.07.127-.01.49-.02.63 0 .14.018.48.06.59.096.11.036.32.15.43.205.11.056.23.122.335.18.105.056.437.286.51.33.073.043.152.09.197.138.045.048.155.11.24.165.083.053.15.105.215.15.066.046.143.11.21.16.068.05.15.115.19.16.04.045.08.098.08.098s.083.092.083.092z"/>
+      </svg>
     </a>
   </p>
 </div>
@@ -73,7 +74,7 @@ function unlockPage(){
   if(logoutCount>=2){
     errorMsg.classList.remove("hidden");
     errorMsg.querySelector("span").textContent="🚫 Limit reached! আর লগইন সম্ভব নয়।";
-    whatsappLink.href="https://wa.me/8801XXXXXXXXX?text=আমি%20লগইন করতে পারতেছি না";
+    whatsappLink.href="https://wa.me/8801760226034?text=আমি%20লগইন করতে পারতেছি না";
     return;
   }
   let duration=0;
