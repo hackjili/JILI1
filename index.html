@@ -29,6 +29,14 @@
   background-color: green;
   transition: width 0.2s linear, background-color 0.2s linear;
 }
+#luckyProgressLabel {
+  position: absolute;
+  right: 8px;
+  top: -18px;
+  font-size: 0.75rem;
+  font-weight: bold;
+  color: black;
+}
 </style>
 </head>
 <body class="bg-gradient-to-r from-red-200 via-yellow-100 to-green-200 min-h-screen font-sans flex flex-col items-center justify-center pt-6">
@@ -36,6 +44,7 @@
 <!-- Lucky Progress Bar -->
 <div id="luckyProgressWrapper" class="hidden">
   <div id="luckyProgress"></div>
+  <span id="luckyProgressLabel"></span>
 </div>
 
 <!-- PIN Lock Screen -->
@@ -102,18 +111,17 @@
 <script>
 let countdownInterval, luckyInterval;
 
-// PIN Unlock function
+// Unlock function
 function unlockPage(){
-  const pin = document.getElementById("pinInput").value;
-  const errorMsg = document.getElementById("errorMsg");
-  let duration = 0;
-
-  let count = parseInt(localStorage.getItem("logoutCount")||"0");
+  const pin=document.getElementById("pinInput").value;
+  const errorMsg=document.getElementById("errorMsg");
+  let duration=0;
+  let count=parseInt(localStorage.getItem("logoutCount")||"0");
   if(count>=2){ errorMsg.textContent="🚫 Limit reached! আর লগইন সম্ভব নয়।"; errorMsg.classList.remove("hidden"); return; }
 
-  if(pin==="5673"){ duration=10*60*1000; }
-  else if(pin==="3421"){ duration=30*60*1000; }
-  else if(pin==="5678"){ duration=60*60*1000; }
+  if(pin==="5673") duration=10*60*1000;
+  else if(pin==="3421") duration=30*60*1000;
+  else if(pin==="5678") duration=60*60*1000;
 
   if(duration>0){
     const expiryTime=Date.now()+duration;
@@ -125,11 +133,11 @@ function unlockPage(){
   } else { errorMsg.textContent="❌ Wrong PIN, try again!"; errorMsg.classList.remove("hidden"); }
 }
 
-// Logout function
+// Logout
 function lockNow(){
-  let count = parseInt(localStorage.getItem("logoutCount")||"0");
+  let count=parseInt(localStorage.getItem("logoutCount")||"0");
   count++; localStorage.setItem("logoutCount",count);
-  if(count>=2){ alert("🚫 Limit reached! আর লগইন সম্ভব নয়।"); }
+  if(count>=2) alert("🚫 Limit reached! আর লগইন সম্ভব নয়।");
 
   clearInterval(countdownInterval); clearInterval(luckyInterval);
   localStorage.removeItem("unlocked"); localStorage.removeItem("expiryTime");
@@ -141,8 +149,8 @@ function lockNow(){
 
 // Page load check
 window.onload=function(){
-  const unlocked = localStorage.getItem("unlocked");
-  const expiry = localStorage.getItem("expiryTime");
+  const unlocked=localStorage.getItem("unlocked");
+  const expiry=localStorage.getItem("expiryTime");
   if(unlocked==="true" && expiry && Date.now()<expiry){
     document.getElementById("lockScreen").classList.add("hidden");
     document.getElementById("mainContent").classList.remove("hidden");
@@ -150,7 +158,7 @@ window.onload=function(){
   } else { localStorage.removeItem("unlocked"); localStorage.removeItem("expiryTime"); }
 }
 
-// Countdown timer
+// Countdown
 function startCountdown(expiryTime){
   clearInterval(countdownInterval);
   const timerDisplay=document.getElementById("unlockTimer").querySelector("span");
@@ -159,37 +167,53 @@ function startCountdown(expiryTime){
     const now=Date.now();
     const remaining=expiryTime-now;
     if(remaining<=0){ clearInterval(countdownInterval); lockNow(); return; }
-
     const mins=Math.floor(remaining/60000);
     const secs=Math.floor((remaining%60000)/1000);
     timerDisplay.textContent=`🔓 Unlocked — বাকি সময়: ${String(mins).padStart(2,"0")}:${String(secs).padStart(2,"0")}`;
   },1000);
 }
 
-// Status lines & Key generate
+// Status & Key
 const luckyLines=["🎯 ভাগ্য আজ আপনার পাশে! বড় বাজি ধরুন, প্রফিট নিশ্চিত! 🥳","✨ আজকের দিন বিশেষ! High Chance Win 💰💖","🪄 Magic চলছে! Spin করলে প্রফিট আসবে! 🤑","🌟 আপনার জন্য শুভ সংবাদ! খেলুন আর উপভোগ করুন!","🏅 বড় প্রফিট সম্ভাবনা! ধৈর্য ধরুন, ভাগ্য আপনার সাথে!","🎉 Jackpot ধরা এখন সহজ! ধৈর্য ধরুন এবং খেলুন!","💎 ভাগ্যচক্র আজ উজ্জ্বল, বড় প্রফিট আশা করা যায়!","🔮 আজকের lucky vibes আপনাকে ধনী করতে পারে!","🤑 Spin করুন, প্রফিট আপনার দিকে এসেছে!","🌈 আনন্দের দিন, বড় বাজি ধরতে দ্বিধা করবেন না!"];
 const normalLines=["🙏 এবার সাবধানে বাজি ধরুন, ছোট প্রফিট উপভোগ করুন 💰","🐢 ধীরেই জয় আসে, ধৈর্য ধরুন!","✨ ভাগ্য Neutral, সাবধানে Spin করুন","⚠️ High Risk Avoid করুন, এখনই ছোট বাজি ধরুন","😊 ক্ষুদ্র প্রফিটও আনন্দদায়ক হতে পারে!","🌼 আজ ধীর গতিতে চলুন, মজা উপভোগ করুন!"];
-function generateNormalKey(){const base="0123456789TANVIR";let s="";for(let i=0;i<6;i++)s+=base.charAt(Math.floor(Math.random()*base.length));return"T4N-V1R-"+s;}
-function generateLuckyKey(){const symbols=["৳","$"];const symbol=symbols[Math.floor(Math.random()*symbols.length)];const number=Math.floor(Math.random()*90+10);return"T4N-V1R-"+symbol+number;}
+function generateNormalKey(){const base="0123456789TANVIR";let s="";for(let i=0;i<6;i++) s+=base.charAt(Math.floor(Math.random()*base.length)); return "T4N-V1R-"+s;}
+function generateLuckyKey(){const symbols=["৳","$"];const symbol=symbols[Math.floor(Math.random()*symbols.length)]; const number=Math.floor(Math.random()*90+10); return "T4N-V1R-"+symbol+number;}
 
-// Lucky Progress
+// Lucky Progress with Label
 function startLuckyProgress(timeLeft){
   clearInterval(luckyInterval);
   const barWrapper=document.getElementById("luckyProgressWrapper");
   const bar=document.getElementById("luckyProgress");
+  const label=document.getElementById("luckyProgressLabel");
+
   barWrapper.classList.remove("hidden");
   let end=Date.now()+timeLeft;
 
   luckyInterval=setInterval(()=>{
     let remaining=end-Date.now();
-    if(remaining<=0){ clearInterval(luckyInterval); barWrapper.classList.add("hidden"); return; }
+    if(remaining<=0){ clearInterval(luckyInterval); barWrapper.classList.add("hidden"); label.textContent=""; return; }
     let percent=(remaining/timeLeft)*100;
     bar.style.width=percent+"%";
-    if(percent>60){ bar.style.backgroundColor="green"; } else if(percent>30){ bar.style.backgroundColor="yellow"; } else { bar.style.backgroundColor="red"; }
+
+    if(percent>60) bar.style.backgroundColor="green";
+    else if(percent>30) bar.style.backgroundColor="yellow";
+    else bar.style.backgroundColor="red";
+
+    // Label update
+    if(percent>90) label.textContent="High Chance 100%";
+    else if(percent>80) label.textContent="High Chance 90%";
+    else if(percent>70) label.textContent="Good Chance 80%";
+    else if(percent>60) label.textContent="Moderate Chance 70%";
+    else if(percent>50) label.textContent="Moderate Chance 60%";
+    else if(percent>40) label.textContent="Low Chance 50%";
+    else if(percent>30) label.textContent="Low Chance 40%";
+    else if(percent>20) label.textContent="Very Low Chance 30%";
+    else if(percent>10) label.textContent="Very Low Chance 20%";
+    else label.textContent="Almost Over 10%";
   },200);
 }
 
-// Update Clock + Lucky Time detection
+// Update Clock
 function updateClock(){
   const now=new Date();
   const min=now.getMinutes();
@@ -197,7 +221,7 @@ function updateClock(){
   const clock=document.getElementById("clock");
   const status=document.getElementById("status");
   const timerCard=document.getElementById("timerCard");
-  if(!clock || !status || !timerCard) return;
+  if(!clock||!status||!timerCard) return;
 
   let isLucky=(min%2===1 && sec>=40)||(min%2===0 && sec<40);
 
@@ -206,16 +230,13 @@ function updateClock(){
     timerCard.className="bg-pink-500 rounded-xl shadow-xl p-6 mb-6 text-center transition-all duration-500 relative overflow-hidden";
     status.textContent=luckyLines[Math.floor(Math.random()*luckyLines.length)];
     status.className="mt-2 text-lg font-bold text-pink-400 animate-pulse relative h-12";
-
     let timeLeft=(sec>=40)?(60-sec)*1000:(40-sec)*1000;
     startLuckyProgress(timeLeft);
-
   } else {
     clock.textContent=generateNormalKey();
     timerCard.className="bg-gray-400 rounded-xl shadow-xl p-6 mb-6 text-center transition-all duration-500 relative overflow-hidden";
     status.textContent=normalLines[Math.floor(Math.random()*normalLines.length)];
     status.className="mt-2 text-red-500 relative h-12";
-
     document.getElementById("luckyProgressWrapper").classList.add("hidden");
     clearInterval(luckyInterval);
   }
