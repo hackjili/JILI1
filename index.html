@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Super Ace Predication V2</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+/* Pulse animation for tips */
+@keyframes pulseScale {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+}
+.animate-pulse-scale { display: inline-block; animation: pulseScale 1.5s infinite ease-in-out; }
+
+/* Fixed top progress bar */
+#luckyProgressWrapper {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 6px;
+  background-color: #ddd;
+  z-index: 50;
+}
+#luckyProgress {
+  height: 100%;
+  width: 100%;
+  background-color: green;
+  transition: width 0.2s linear, background-color 0.2s linear;
+}
+</style>
+</head>
+<body class="bg-gradient-to-r from-red-200 via-yellow-100 to-green-200 min-h-screen font-sans flex flex-col items-center justify-center pt-6">
+
+<!-- Lucky Progress Bar -->
+<div id="luckyProgressWrapper" class="hidden">
+  <div id="luckyProgress"></div>
+</div>
+
+<!-- PIN Lock Screen -->
+<div id="lockScreen" class="bg-white rounded-xl shadow-xl p-6 text-center max-w-sm w-full mt-10">
+  <h2 class="text-2xl font-bold mb-4">🔒 Enter PIN</h2>
+  <input type="password" id="pinInput" placeholder="Enter PIN" class="border p-2 rounded w-full text-center mb-4">
+  <button onclick="unlockPage()" class="bg-cyan-500 text-white px-4 py-2 rounded w-full hover:bg-cyan-600">Unlock</button>
+  <p id="errorMsg" class="text-red-500 mt-2 hidden"></p>
+</div>
+
+<!-- Main Content -->
+<div id="mainContent" class="hidden w-full flex flex-col items-center justify-start">
+
+<!-- Timer header with logout -->
+<div class="w-full bg-green-600 text-white py-2 text-sm flex justify-between items-center px-4" id="unlockTimer">
+  <span>🔓 Unlocked — বাকি সময়: --</span>
+  <button onclick="lockNow()" class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 text-xs">Logout</button>
+</div>
+
+<header class="w-full bg-cyan-500 text-white py-4 shadow-md text-center rounded-b-lg">
+  <h1 class="text-3xl font-bold">Super Ace Predication V2</h1>
+  <p class="text-sm mt-1">অতি লোভে তাতি নষ্ট, খেলবেন তবে বেশি লোভ করবেন না 😩🫶</p>
+</header>
+
+<main class="mt-6 w-full max-w-xl px-4">
+  <!-- Timer / Key Card -->
+  <div id="timerCard" class="bg-white rounded-xl shadow-xl p-6 mb-6 text-center transition-all duration-500 relative overflow-hidden">
+    <h2 class="text-2xl font-semibold mb-2">Predication 😍</h2>
+    <div id="clock" class="text-xl font-mono text-indigo-700 font-bold tracking-wider"></div>
+    <p id="status" class="mt-2 text-lg relative h-12"></p>
+  </div>
+
+  <!-- Strategy Card -->
+  <div class="bg-white rounded-xl shadow-xl p-6 mb-6">
+    <h2 class="text-xl font-semibold mb-4">💡 খেলার গাইড</h2>
+    <ul class="list-disc list-inside space-y-2 text-gray-700">
+      <li class="animate-pulse-scale">★সাধারণ সময়ে ১-৩ টাকা বেট দিয়ে spin করুন।</li>
+      <li class="animate-pulse-scale">★বড় প্রফিটের সময় ৫–২০ টাকা বেট দিন।</li>
+      <li class="animate-pulse-scale">★১০০০ টাকা হাতে থাকলে প্রথমে ছোট বেট দিয়ে spin করুন।</li>
+      <li class="animate-pulse-scale">★Big Win (যেমন ১০০০০+) এ profit নিন এবং কিছু টাকা তুলে রাখুন।</li>
+      <li class="animate-pulse-scale">★Free Spin এবং Cascade ফিচারের দিকে বেশি ফোকাস করুন।</li>
+    </ul>
+  </div>
+
+  <!-- Extra Tips Card -->
+  <div class="bg-white rounded-xl shadow-xl p-6 mb-6">
+    <h2 class="text-xl font-semibold mb-4">🎯 Extra Tips</h2>
+    <ul class="list-disc list-inside space-y-2 text-gray-700">
+      <li class="animate-pulse-scale">★Auto Spin না দিয়ে ম্যানুয়াল spin করুন।</li>
+      <li class="animate-pulse-scale">★Jackpot ধরলে কিছু টাকা তুলে রাখুন।</li>
+      <li class="animate-pulse-scale">★Free Spin + Cascade ফিচারগুলো maximize করতে চেষ্টা করুন।</li>
+      <li class="animate-pulse-scale">★Balance 50% বের করে রাখলে Loss কম হবে।</li>
+      <li class="animate-pulse-scale">★ধৈর্য ধরুন, বড় প্রফিট আসবে।</li>
+      <li class="animate-pulse-scale">★সফল Spin এর পরে ছোট বাজি দিয়ে পরবর্তী চেষ্টা করুন।</li>
+    </ul>
+  </div>
+</main>
+
+<footer class="w-full bg-red-600 text-white py-4 text-center rounded-t-lg mt-auto">
+  <p>&copy; 2025 <a href="https://tanvir-sheikh.onrender.com" class="underline hover:text-yellow-200">developed by Tanvir Sheikh 💖</a></p>
+</footer>
+</div>
+
+<script>
+let countdownInterval, luckyInterval;
+
+// PIN Unlock function
+function unlockPage(){
+  const pin = document.getElementById("pinInput").value;
+  const errorMsg = document.getElementById("errorMsg");
+  let duration = 0;
+
+  let count = parseInt(localStorage.getItem("logoutCount")||"0");
+  if(count>=2){ errorMsg.textContent="🚫 Limit reached! আর লগইন সম্ভব নয়।"; errorMsg.classList.remove("hidden"); return; }
+
+  if(pin==="5673"){ duration=10*60*1000; }
+  else if(pin==="3421"){ duration=30*60*1000; }
+  else if(pin==="5678"){ duration=60*60*1000; }
+
+  if(duration>0){
+    const expiryTime=Date.now()+duration;
+    localStorage.setItem("unlocked","true");
+    localStorage.setItem("expiryTime",expiryTime);
+    document.getElementById("lockScreen").classList.add("hidden");
+    document.getElementById("mainContent").classList.remove("hidden");
+    startCountdown(expiryTime);
+  } else { errorMsg.textContent="❌ Wrong PIN, try again!"; errorMsg.classList.remove("hidden"); }
+}
+
+// Logout function
+function lockNow(){
+  let count = parseInt(localStorage.getItem("logoutCount")||"0");
+  count++; localStorage.setItem("logoutCount",count);
+  if(count>=2){ alert("🚫 Limit reached! আর লগইন সম্ভব নয়।"); }
+
+  clearInterval(countdownInterval); clearInterval(luckyInterval);
+  localStorage.removeItem("unlocked"); localStorage.removeItem("expiryTime");
+  document.getElementById("mainContent").classList.add("hidden");
+  document.getElementById("lockScreen").classList.remove("hidden");
+  document.getElementById("pinInput").value="";
+  document.getElementById("luckyProgressWrapper").classList.add("hidden");
+}
+
+// Page load check
+window.onload=function(){
+  const unlocked = localStorage.getItem("unlocked");
+  const expiry = localStorage.getItem("expiryTime");
+  if(unlocked==="true" && expiry && Date.now()<expiry){
+    document.getElementById("lockScreen").classList.add("hidden");
+    document.getElementById("mainContent").classList.remove("hidden");
+    startCountdown(expiry);
+  } else { localStorage.removeItem("unlocked"); localStorage.removeItem("expiryTime"); }
+}
+
+// Countdown timer
+function startCountdown(expiryTime){
+  clearInterval(countdownInterval);
+  const timerDisplay=document.getElementById("unlockTimer").querySelector("span");
+
+  countdownInterval=setInterval(()=>{
+    const now=Date.now();
+    const remaining=expiryTime-now;
+    if(remaining<=0){ clearInterval(countdownInterval); lockNow(); return; }
+
+    const mins=Math.floor(remaining/60000);
+    const secs=Math.floor((remaining%60000)/1000);
+    timerDisplay.textContent=`🔓 Unlocked — বাকি সময়: ${String(mins).padStart(2,"0")}:${String(secs).padStart(2,"0")}`;
+  },1000);
+}
+
+// Status lines & Key generate
+const luckyLines=["🎯 ভাগ্য আজ আপনার পাশে! বড় বাজি ধরুন, প্রফিট নিশ্চিত! 🥳","✨ আজকের দিন বিশেষ! High Chance Win 💰💖","🪄 Magic চলছে! Spin করলে প্রফিট আসবে! 🤑","🌟 আপনার জন্য শুভ সংবাদ! খেলুন আর উপভোগ করুন!","🏅 বড় প্রফিট সম্ভাবনা! ধৈর্য ধরুন, ভাগ্য আপনার সাথে!","🎉 Jackpot ধরা এখন সহজ! ধৈর্য ধরুন এবং খেলুন!","💎 ভাগ্যচক্র আজ উজ্জ্বল, বড় প্রফিট আশা করা যায়!","🔮 আজকের lucky vibes আপনাকে ধনী করতে পারে!","🤑 Spin করুন, প্রফিট আপনার দিকে এসেছে!","🌈 আনন্দের দিন, বড় বাজি ধরতে দ্বিধা করবেন না!"];
+const normalLines=["🙏 এবার সাবধানে বাজি ধরুন, ছোট প্রফিট উপভোগ করুন 💰","🐢 ধীরেই জয় আসে, ধৈর্য ধরুন!","✨ ভাগ্য Neutral, সাবধানে Spin করুন","⚠️ High Risk Avoid করুন, এখনই ছোট বাজি ধরুন","😊 ক্ষুদ্র প্রফিটও আনন্দদায়ক হতে পারে!","🌼 আজ ধীর গতিতে চলুন, মজা উপভোগ করুন!"];
+function generateNormalKey(){const base="0123456789TANVIR";let s="";for(let i=0;i<6;i++)s+=base.charAt(Math.floor(Math.random()*base.length));return"T4N-V1R-"+s;}
+function generateLuckyKey(){const symbols=["৳","$"];const symbol=symbols[Math.floor(Math.random()*symbols.length)];const number=Math.floor(Math.random()*90+10);return"T4N-V1R-"+symbol+number;}
+
+// Lucky Progress
+function startLuckyProgress(timeLeft){
+  clearInterval(luckyInterval);
+  const barWrapper=document.getElementById("luckyProgressWrapper");
+  const bar=document.getElementById("luckyProgress");
+  barWrapper.classList.remove("hidden");
+  let end=Date.now()+timeLeft;
+
+  luckyInterval=setInterval(()=>{
+    let remaining=end-Date.now();
+    if(remaining<=0){ clearInterval(luckyInterval); barWrapper.classList.add("hidden"); return; }
+    let percent=(remaining/timeLeft)*100;
+    bar.style.width=percent+"%";
+    if(percent>60){ bar.style.backgroundColor="green"; } else if(percent>30){ bar.style.backgroundColor="yellow"; } else { bar.style.backgroundColor="red"; }
+  },200);
+}
+
+// Update Clock + Lucky Time detection
+function updateClock(){
+  const now=new Date();
+  const min=now.getMinutes();
+  const sec=now.getSeconds();
+  const clock=document.getElementById("clock");
+  const status=document.getElementById("status");
+  const timerCard=document.getElementById("timerCard");
+  if(!clock || !status || !timerCard) return;
+
+  let isLucky=(min%2===1 && sec>=40)||(min%2===0 && sec<40);
+
+  if(isLucky){
+    clock.textContent=generateLuckyKey();
+    timerCard.className="bg-pink-500 rounded-xl shadow-xl p-6 mb-6 text-center transition-all duration-500 relative overflow-hidden";
+    status.textContent=luckyLines[Math.floor(Math.random()*luckyLines.length)];
+    status.className="mt-2 text-lg font-bold text-pink-400 animate-pulse relative h-12";
+
+    let timeLeft=(sec>=40)?(60-sec)*1000:(40-sec)*1000;
+    startLuckyProgress(timeLeft);
+
+  } else {
+    clock.textContent=generateNormalKey();
+    timerCard.className="bg-gray-400 rounded-xl shadow-xl p-6 mb-6 text-center transition-all duration-500 relative overflow-hidden";
+    status.textContent=normalLines[Math.floor(Math.random()*normalLines.length)];
+    status.className="mt-2 text-red-500 relative h-12";
+
+    document.getElementById("luckyProgressWrapper").classList.add("hidden");
+    clearInterval(luckyInterval);
+  }
+}
+
+setInterval(updateClock,2000);
+updateClock();
+</script>
+</body>
+</html>
